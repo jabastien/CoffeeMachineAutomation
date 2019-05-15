@@ -93,19 +93,21 @@ class DB:
             )
             self.conn.autocommit = True
             self.cursor = self.conn.cursor(buffered=True)
+            sql = "SET SESSION MAX_EXECUTION_TIME=500"
+            self.query(sql)
             sql = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \'"+self.db_name+"\';"
             db_exist = self.mysql_query(sql)
             if not db_exist:
                 self.create_db()
             else:
                 sql = "USE "+self.db_name+";"
-                self.query(sql)
+                self.query(sql)     
         except ConnectionRefusedError:
             print("Couldn't connect")
             self.conn.reconnect(attempts=5, delay=30)
 
     def query(self, sql, sql_tuple=None):
-        cursor = self.conn.cursor(buffered=True)
+        cursor = self.cursor
         try:
             if sql_tuple is None:
                 cursor.execute(sql)
@@ -438,26 +440,28 @@ class Server(BaseHTTPRequestHandler):
                         self.wfile.write(f.read())
                         f.close()
                     return
-
                 except IOError:
                     self.send_error(404,'File Not Found: %s' % self.path)
             
             else:
-                self._set_headers()
-                if 'log' in url:
-                    self.wfile.write(json.dumps(show_log()).encode())
-                elif 'orders' in url:
-                    self.wfile.write(json.dumps(show_order_history_all()).encode())
-                elif 'orders_since_refill' in url:
-                    self.wfile.write(json.dumps(show_order_history_since_refill()).encode())
-                elif 'users' in url:
-                    self.wfile.write(json.dumps(show_users()).encode())
-                elif 'unregistered_users' in url:
-                    self.wfile.write(json.dumps(show_unregistered_users()).encode())
-                elif 'configure' in url:
-                        self.wfile.write(json.dumps(show_config()).encode())
-                else:
-                    self.wfile.write(json.dumps({'error': 'unknown_parameter'}).encode())
+                try:
+                    self._set_headers()
+                    if 'log' in url:
+                        self.wfile.write(json.dumps(show_log()).encode())
+                    elif 'orders' in url:
+                        self.wfile.write(json.dumps(show_order_history_all()).encode())
+                    elif 'orders_since_refill' in url:
+                        self.wfile.write(json.dumps(show_order_history_since_refill()).encode())
+                    elif 'users' in url:
+                        self.wfile.write(json.dumps(show_users()).encode())
+                    elif 'unregistered_users' in url:
+                        self.wfile.write(json.dumps(show_unregistered_users()).encode())
+                    elif 'configure' in url:
+                            self.wfile.write(json.dumps(show_config()).encode())
+                    else:
+                        self.wfile.write(json.dumps({'error': 'unknown_parameter'}).encode())
+                except BrokenPipeError:
+                    pass
         else:
             mimetype='text/html'
             self.send_response(200)
