@@ -102,7 +102,7 @@ class DB:
                 self.query(sql)
         except ConnectionRefusedError:
             print("Couldn't connect")
-            self.cursor.reconnect(attempts=5, delay=30)
+            self.conn.reconnect(attempts=5, delay=30)
 
     def query(self, sql, sql_tuple=None):
         cursor = self.conn.cursor(buffered=True)
@@ -129,8 +129,11 @@ class DB:
         return self.cursor
     
     def mysql_query(self, sql):
-        cursor = self.query(sql)
-        match = cursor.fetchall()
+        try:
+            cursor = self.query(sql)
+            match = cursor.fetchall()
+        except mysql.connector.errors.OperationalError:
+            match = []
         return match
 
     def create_db(self):
@@ -143,7 +146,7 @@ class DB:
                 print(sql)
                 self.query(sql)
 
-server = "192.168.1.11"#environ.get('mqtt_host') # FILL IN YOUR CREDENTIALS
+server = environ.get('mqtt_host') # FILL IN YOUR CREDENTIALS
 port = environ.get('mqtt_port')
 mqtt_username = environ.get('mqtt_username') 
 mqtt_password = environ.get('mqtt_password')
