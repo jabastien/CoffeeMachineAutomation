@@ -191,15 +191,15 @@ def show_log():
     return mydb.mysql_query(sql)
 
 def show_order_history_all():
-    sql = """SELECT user_list.username, readcard.val, count(readcard.val) as `count`, config.grams * count(readcard.val) as grams, config.price * count(readcard.val) as price FROM config,readcard
-                JOIN user_list WHERE readcard.val = user_list.cardID
+    sql = """SELECT user_list.username, consumption.val, count(consumption.val) as `count`, config.grams * count(consumption.val) as grams, config.price * count(consumption.val) as price FROM config, consumption
+                JOIN user_list WHERE consumption.val = user_list.cardID
                 ORDER BY user_list.username
             """
     return mydb.mysql_query(sql)
 
 def show_order_history_since_refill():
-    sql = """SELECT user_list.username, readcard.val, count(readcard.val) as `count`, config.grams * count(readcard.val) as grams, config.price * count(readcard.val) as price FROM config, last_refill, readcard
-                JOIN user_list WHERE readcard.val = user_list.cardID AND (readcard.`time` >  last_refill.`time`) AND last_refill.id=(SELECT MAX(id) FROM last_refill) HAVING `count` > 0
+    sql = """SELECT user_list.username, consumption.val, count(consumption.val) as `count`, config.grams * count(consumption.val) as grams, config.price * count(consumption.val) as price FROM config, last_refill, consumption
+                JOIN user_list WHERE consumption.val = user_list.cardID AND (consumption.`time` >  last_refill.`time`) AND last_refill.id=(SELECT MAX(id) FROM last_refill) HAVING `count` > 0
                 ORDER BY user_list.username
             """
     return mydb.mysql_query(sql)
