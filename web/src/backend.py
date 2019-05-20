@@ -192,14 +192,14 @@ def show_log():
 
 def show_order_history_all():
     sql = """SELECT user_list.username, readcard.val, count(readcard.val) as `count`, config.grams * count(readcard.val) as grams, config.price * count(readcard.val) as price FROM config,readcard
-                JOIN user_list WHERE readcard.val = user_list.cardid
+                JOIN user_list WHERE readcard.val = user_list.cardID
                 ORDER BY user_list.username
             """
     return mydb.mysql_query(sql)
 
 def show_order_history_since_refill():
     sql = """SELECT user_list.username, readcard.val, count(readcard.val) as `count`, config.grams * count(readcard.val) as grams, config.price * count(readcard.val) as price FROM config, last_refill, readcard
-                JOIN user_list WHERE readcard.val = user_list.cardid AND (readcard.`time` >  last_refill.`time`) AND last_refill.id=(SELECT MAX(id) FROM last_refill) HAVING `count` > 0
+                JOIN user_list WHERE readcard.val = user_list.cardID AND (readcard.`time` >  last_refill.`time`) AND last_refill.id=(SELECT MAX(id) FROM last_refill) HAVING `count` > 0
                 ORDER BY user_list.username
             """
     return mydb.mysql_query(sql)
@@ -211,16 +211,16 @@ def show_users():
 def show_unregistered_users():
     sql = "SET @cnt=0;"
     mydb.query(sql)
-    sql = """SELECT (@cnt := @cnt + 1) AS id, r1.val as cardID, UNIX_TIMESTAMP(r1.`time`) as `time_unix`, COALESCE(u.username, 'unregistered') as username FROM readcard r1 LEFT JOIN user_list u ON r1.val = u.cardid
+    sql = """SELECT (@cnt := @cnt + 1) AS id, r1.val as cardID, UNIX_TIMESTAMP(r1.`time`) as `time_unix`, COALESCE(u.username, 'unregistered') as username FROM readcard r1 LEFT JOIN user_list u ON r1.val = u.cardID
                 WHERE r1.`time` = (SELECT MAX(`time`) FROM readcard r2 WHERE r1.val = r2.val) 
                 ORDER BY r1.`time`;
             """
     return mydb.mysql_query(sql)
 
 def register(cardid, username):
-    sql="INSERT INTO user_list(cardid, username) VALUES("+str(cardid)+", \'"+str(username)+"\') ON DUPLICATE KEY UPDATE username='"+str(username)+"';"
+    sql="INSERT INTO user_list(cardID, username) VALUES("+str(cardid)+", \'"+str(username)+"\') ON DUPLICATE KEY UPDATE username='"+str(username)+"';"
     if username == "delete":
-        sql="DELETE FROM user_list where cardid like \'%"+str(cardid)+"%\'"
+        sql="DELETE FROM user_list where cardID like \'%"+str(cardid)+"%\'"
     #print(sql)
     mydb.query(sql)
     #mydb.commit()
