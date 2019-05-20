@@ -19,6 +19,7 @@ import threading
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import http.cookies
+import ssl
 
 import socketserver
 import cgi
@@ -158,6 +159,8 @@ mysql_port = 3306
 mysql_user = "root"
 mysql_password = ""
 mysql_database = "coffeeesp"
+
+USE_SSL = True
 
 wait_for_database(mysql_host, mysql_port, mysql_database, mysql_user, mysql_password, 10)
 
@@ -523,6 +526,9 @@ class Server(BaseHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=Server, port=80):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
+
+    if (USE_SSL == True):
+        httpd.socket = ssl.wrap_socket (httpd.socket, certfile='server.pem', server_side=True)
 
     print('Starting httpd on port %d...' % port)
     try:
