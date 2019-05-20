@@ -322,11 +322,11 @@ def machine_ready():
     match = mycursor.fetchone()
     if match == None: 
         emptywater = True
-    sql = "SELECT * FROM power_on WHERE val=1 ORDER BY id DESC LIMIT 1" # machine is on
+    '''sql = "SELECT * FROM power_on WHERE val=1 ORDER BY id DESC LIMIT 1" # machine is on
     mycursor = mydb.query(sql)
     match = mycursor.fetchone()
     if match == None:
-        power_on = False    
+        power_on = False'''
     return ready and power_on and not emptywater
 
 
