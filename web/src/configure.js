@@ -80,7 +80,7 @@ function downloadData() {
 					//pole[i].id
 					//if (pole[i].timestamp > pole_time_old) {
 						pom += "price" +'<input type=\"text\" name=\"price\" value=\"'+pole[0][1]+'\" required>'+'<br>';
-						pom += "price" +'<input type=\"text\" name=\"grams\" value=\"'+pole[0][2]+'\" required>'+'<br>';
+						pom += "grams" +'<input type=\"text\" name=\"grams\" value=\"'+pole[0][2]+'\" required>'+'<br>';
 						//document.getElementById("dataArea").innerHTML += " DeviceID: " + pole[i].deviceID + " SensorID: " + pole[i].sensorID + " " + pole[i].sensorType + ":"+ "&emsp;&emsp;" +  pole[i].value + jednotka +" </br>";
 						//document.getElementById("dataArea").innerHTML += "Last data received on: " + pole[i].timestamp + " </br>";
 
